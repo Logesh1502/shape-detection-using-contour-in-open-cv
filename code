@@ -1,0 +1,54 @@
+
+import cv2 
+import numpy as np 
+from matplotlib import pyplot as plt 
+from google.colab.patches import cv2_imshow # Import the cv2_imshow function
+img= cv2.imread('/content/OIP (2).jpg') 
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
+kernel = np.ones((5,5), np.uint8)
+_, threshold = cv2.threshold(gray, 230, 255, cv2.THRESH_BINARY)  # Apply thresholding to the GRAYSCALE image
+contours, _ = cv2.findContours( 
+    threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)  #Pass the single-channel threshold image
+cv2.drawContours(threshold, contours, -1, (0,255,0), thickness = 2)
+cv2_imshow(img)
+i=0
+for contour in contours: 
+    if i == 0: 
+        i = 1
+        continue
+    approx = cv2.approxPolyDP( 
+        contour, 0.01 * cv2.arcLength(contour, True), True)  
+    cv2.drawContours(img, [contour], 0, (0, 0, 255), 5) 
+    M = cv2.moments(contour) 
+    if M['m00'] != 0.0: 
+        x = int(M['m10']/M['m00']) 
+        y = int(M['m01']/M['m00']) 
+    if len(approx) == 3: 
+        cv2.putText(img, '3', (x, y), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) 
+
+    elif len(approx) == 4: 
+        cv2.putText(img, '4', (x, y), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) 
+
+    elif len(approx) == 5: 
+        cv2.putText(img, '5', (x, y), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) 
+
+    elif len(approx) == 6: 
+        cv2.putText(img, '6', (x, y), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) rs
+    elif len(approx) == 7:
+      cv2.putText(img, '7', (x, y), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    elif len(approx) == 8: 
+      cv2.putText(img, '8', (x, y), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    else: 
+      cv2.putText(img, 'C', (x, y), 
+					cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2) 
+cv2_imshow(img) # Use cv2_imshow instead of cv2.imshow
+
+print("shape detection using contour(detecting edges using threshold method):\n3-triangle.\n4-quadrilateral.\n5-pentagon.\n6-hexagon.\n7-heptagon\n8-octagon\nC-circle,ellipse,semi-circle.")
+cv2.waitKey(0) 
+cv2.destroyAllWindows()
